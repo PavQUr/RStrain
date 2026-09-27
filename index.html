@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сербский для магазина, пекарни и ресторана</title>
+
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1d2939;
+      --muted: #667085;
+      --primary: #3157c8;
+      --primary-hover: #2547aa;
+      --correct: #16794b;
+      --correct-bg: #e8f8ef;
+      --wrong: #c83c3c;
+      --wrong-bg: #fff0f0;
+      --border: #d9e0ea;
+      --shadow: 0 12px 35px rgba(37, 57, 96, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 32px 16px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #dce8ff 0, transparent 35%),
+        radial-gradient(circle at bottom right, #e5f8ed 0, transparent 32%),
+        var(--bg);
+    }
+
+    .app {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0 0 10px;
+      color: #182b61;
+      font-size: clamp(26px, 5vw, 38px);
+    }
+
+    .header p {
+      margin: 0;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .card {
+      padding: clamp(20px, 5vw, 38px);
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .settings {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    select,
+    .text-answer {
+      padding: 11px 12px;
+      font-size: 16px;
+      color: var(--text);
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      height: 9px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      background: #e8edf5;
+      border-radius: 99px;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #3157c8, #5a80ef);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    .category {
+      display: inline-block;
+      padding: 7px 11px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--primary);
+      background: #eaf0ff;
+      border-radius: 999px;
+    }
+
+    .question-label {
+      margin-bottom: 7px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .question {
+      margin: 0 0 28px;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.25;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      padding: 16px 18px;
+      font-size: 17px;
+      text-align: left;
+      color: var(--text);
+      cursor: pointer;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 13px;
+      transition: 0.2s ease;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      background: #f5f8ff;
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .answer-btn:disabled {
+      cursor: default;
+    }
+
+    .answer-btn.correct {
+      font-weight: bold;
+      color: #0e6139;
+      background: var(--correct-bg);
+      border-color: var(--correct);
+    }
+
+    .answer-btn.wrong {
+      color: #a82c2c;
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .text-answer {
+      width: 100%;
+      min-width: 0;
+      border: 2px solid var(--border);
+      outline: none;
+    }
+
+    .text-answer:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(49, 87, 200, 0.12);
+    }
+
+    .text-answer.correct-input {
+      color: #0e6139;
+      background: var(--correct-bg);
+      border-color: var(--correct);
+    }
+
+    .text-answer.wrong-input {
+      color: #a82c2c;
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+    }
+
+    .feedback {
+      display: none;
+      padding: 15px 16px;
+      margin-top: 20px;
+      line-height: 1.5;
+      border-radius: 12px;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.good {
+      color: #135f39;
+      background: var(--correct-bg);
+      border: 1px solid #b9e8cb;
+    }
+
+    .feedback.bad {
+      color: #9b2727;
+      background: var(--wrong-bg);
+      border: 1px solid #f4c5c5;
+    }
+
+    .hint {
+      display: block;
+      margin-top: 7px;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .main-btn {
+      padding: 13px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      background: var(--primary);
+      border: 0;
+      border-radius: 11px;
+      transition: 0.2s ease;
+    }
+
+    .main-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .main-btn:disabled {
+      cursor: default;
+      opacity: 0.65;
+    }
+
+    #nextBtn {
+      display: none;
+    }
+
+    .result {
+      display: none;
+      text-align: center;
+    }
+
+    .result h2 {
+      margin: 0 0 12px;
+      font-size: 30px;
+      color: #182b61;
+    }
+
+    .result-score {
+      margin: 14px 0;
+      font-size: 54px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .result p {
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .mistakes {
+      display: none;
+      margin-top: 26px;
+      padding-top: 20px;
+      text-align: left;
+      border-top: 1px solid var(--border);
+    }
+
+    .mistake-item {
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      line-height: 1.45;
+      background: #fff8ed;
+      border-left: 4px solid #e49a27;
+      border-radius: 8px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 13px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 520px) {
+      .input-area {
+        flex-direction: column;
+      }
+
+      .input-area .main-btn {
+        width: 100%;
+      }
+
+      .settings select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>🇷🇸 Сербский в магазине и ресторане</h1>
+      <p>
+        100 разговорных фраз. В каждом запуске — случайные 20 вопросов.
+      </p>
+    </header>
+
+    <section class="card">
+      <div id="quizScreen">
+        <div class="settings">
+          <label for="categorySelect">Тема:</label>
+
+          <select id="categorySelect">
+            <option value="all">Все темы</option>
+            <option value="Магазин">Магазин</option>
+            <option value="Пекарня">Пекарня</option>
+            <option value="Ресторан">Ресторан / кафе</option>
+          </select>
+
+          <button class="main-btn" onclick="startQuiz()">Начать заново</button>
+        </div>
+
+        <div class="progress-row">
+          <span id="progressText">Вопрос 1 из 20</span>
+          <span id="scoreText">Верно: 0</span>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <span class="category" id="category"></span>
+
+        <div class="question-label" id="questionLabel"></div>
+
+        <h2 class="question" id="question"></h2>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="actions">
+          <button class="main-btn" id="nextBtn" onclick="nextQuestion()">
+            Следующий вопрос →
+          </button>
+        </div>
+      </div>
+
+      <div class="result" id="resultScreen">
+        <h2>Квиз завершён!</h2>
+        <div class="result-score" id="finalScore">0 / 20</div>
+        <p id="resultMessage"></p>
+
+        <button class="main-btn" onclick="startQuiz()">Пройти ещё раз</button>
+
+        <div class="mistakes" id="mistakesBlock">
+          <h3>Фразы для повторения</h3>
+          <div id="mistakesList"></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Можно вводить ответы без специальных букв: например, <b>kafa</b> вместо <b>kafa</b>,
+      <b>racun</b> вместо <b>račun</b>, <b>cevapa</b> вместо <b>ćevapa</b>.
+    </p>
+  </main>
+
+  <script>
+    const ALL_QUESTIONS = [
+      /* МАГАЗИН — 30 */
+
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Вы заходите в магазин днём. Как поздороваться?",
+        a: "Dobar dan"
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Продавец обращается к вам: «Чем могу помочь?»",
+        a: "Izvolite?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Вы пока ничего не покупаете: «Я просто смотрю, спасибо».",
+        a: "Samo gledam, hvala."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить: «Где касса?»",
+        a: "Gde je kasa?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как коротко спросить: «Можно картой?»",
+        a: "Može karticom?",
+        alts: ["Je l' može karticom?"]
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Кассир спрашивает: «Наличные или карта?»",
+        a: "Keš ili kartica?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как сказать: «У меня нет мелочи»?",
+        a: "Nemam sitno."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить: «У вас есть пакет?»",
+        a: "Je l' imate kesu?",
+        alts: ["Imate li kesu?", "Imate kesu?"]
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как сказать кассиру: «Пакет мне не нужен»?",
+        a: "Ne treba mi kesa."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Вам нужен чек. Что сказать?",
+        a: "Treba mi račun."
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Чек вам не нужен.",
+        a: "Račun mi ne treba."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как по-разговорному спросить цену: «Сколько это?»",
+        a: "Koliko je ovo?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как уточнить: «Это со скидкой?»",
+        a: "Ovo je na sniženju?"
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить: «Есть что-нибудь подешевле?»",
+        a: "Imate li nešto jeftinije?",
+        alts: ["Je l' imate nešto jeftinije?"]
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как сказать: «Для меня это слишком дорого»?",
+        a: "Preskupo mi je."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить про размер: «Есть это побольше?»",
+        a: "Imate li ovo u većoj veličini?",
+        alts: ["Je l' imate ovo u većoj veličini?"]
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как спросить: «Есть размер поменьше?»",
+        a: "Imate li manji broj?",
+        alts: ["Je l' imate manji broj?"]
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить: «Можно примерить?»",
+        a: "Mogu da probam?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как спросить: «Где примерочные?»",
+        a: "Gde su kabine?"
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Вы решили купить конкретную вещь: «Возьму вот этот».",
+        a: "Uzeću ovaj."
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как сказать: «Только это»?",
+        a: "Samo ovo."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как завершить покупку: «Это всё»?",
+        a: "To je sve."
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как сказать: «Так подойдёт / так нормально»?",
+        a: "Može ovako."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить: «Вы даёте сдачу?»",
+        a: "Vraćate kusur?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как спросить: «Можно вернуть, если мне не подойдёт?»",
+        a: "Mogu da vratim ako mi ne odgovara?"
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как спросить: «Работает касса самообслуживания?»",
+        a: "Radi li samouslužna kasa?"
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как спросить: «Где вода?»",
+        a: "Gde je voda?"
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как сказать: «Мне нужна зарядка для телефона»?",
+        a: "Treba mi punjač za telefon."
+      },
+      {
+        c: "Магазин",
+        t: "choice",
+        ru: "Как сказать: «Я ищу адаптер»?",
+        a: "Tražim adapter."
+      },
+      {
+        c: "Магазин",
+        t: "input",
+        ru: "Как попрощаться после покупки: «Спасибо, хорошего дня»?",
+        a: "Hvala, prijatno."
+      },
+
+      /* ПЕКАРНЯ — 25 */
+
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как заказать: «Один бурек с сыром»?",
+        a: "Jedan burek sa sirom."
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как заказать: «Два йогурта»?",
+        a: "Dva jogurta."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как спросить: «Есть бурек с мясом?»",
+        a: "Je l' ima burek s mesom?",
+        alts: ["Ima li burek s mesom?", "Je l' imate burek s mesom?"]
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как спросить о свежей выпечке: «Что только что вышло?»",
+        a: "Šta je sad izašlo?"
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как спросить: «Он горячий?»",
+        a: "Je l' vruće?",
+        alts: ["Da li je vruće?"]
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как спросить: «Можно половину бурека?»",
+        a: "Može pola bureka?"
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как заказать: «Дайте мне четверть бурека»?",
+        a: "Dajte mi četvrt bureka."
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как заказать: «Одну булочку и один йогурт»?",
+        a: "Jednu kiflu i jedan jogurt."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как спросить: «У вас есть пустой бурек?»",
+        a: "Imate prazan burek?",
+        alts: ["Je l' imate prazan burek?"]
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как указать на выпечку: «Вот этот с маком»?",
+        a: "Ovaj sa makom."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как сказать: «Вот этот с сыром»?",
+        a: "Ovaj sa sirom."
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как сказать: «С собой»?",
+        a: "Za poneti."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как сказать: «Я ем здесь»?",
+        a: "Ovde jedem.",
+        alts: ["Za ovde."]
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как спросить: «Можно разрезать?»",
+        a: "Može li da se iseče?"
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как спросить: «Есть что-нибудь без мяса?»",
+        a: "Ima li nešto bez mesa?",
+        alts: ["Je l' ima nešto bez mesa?"]
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как попросить: «Дайте что-нибудь сладкое»?",
+        a: "Dajte nešto slatko."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как заказать: «Один кусок пиццы»?",
+        a: "Jedno parče pice."
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как заказать: «Два куска пиццы»?",
+        a: "Dva parčeta pice."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как спросить: «Сколько стоит килограмм бурека?»",
+        a: "Koliko je kilo bureka?"
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как заказать: «Полкило с сыром»?",
+        a: "Pola kile sa sirom."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как сказать: «Ещё один йогурт»?",
+        a: "Još jedan jogurt."
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как коротко закончить заказ: «Вот и всё»?",
+        a: "To je to."
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как спросить: «Вы принимаете карты?»",
+        a: "Je l' primate kartice?",
+        alts: ["Primate kartice?"]
+      },
+      {
+        c: "Пекарня",
+        t: "choice",
+        ru: "Как спросить: «Йогурт есть?»",
+        a: "Ima li jogurt?",
+        alts: ["Je l' ima jogurt?"]
+      },
+      {
+        c: "Пекарня",
+        t: "input",
+        ru: "Как заказать: «Можно один йогурт?»",
+        a: "Može jedan jogurt?"
+      },
+
+      /* РЕСТОРАН / КАФЕ — 45 */
+
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Есть места на улице?»",
+        a: "Ima mesta napolju?"
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как коротко попросить: «Столик на двоих»?",
+        a: "Sto za dvoje."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Здесь свободно?»",
+        a: "Je l' slobodno ovde?",
+        alts: ["Slobodno je ovde?"]
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как спросить: «Мы можем здесь сесть?»",
+        a: "Možemo ovde da sednemo?"
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как попросить меню без излишней официальности?",
+        a: "Jelovnik, ako može."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как спросить официанта: «Что посоветуете?»",
+        a: "Šta preporučujete?"
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как заказать: «Я буду плескавицу»?",
+        a: "Ja ću pljeskavicu."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как заказать: «Мне десять чевапов»?",
+        a: "Za mene deset ćevapa."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как разговорно заказать кофе: «Мне один кофе»?",
+        a: "Meni jednu kafu."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как заказать «одну домашнюю кофе»?",
+        a: "Može jedna domaća."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как заказать: «Один длинный эспрессо»?",
+        a: "Jedan duži espresso."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как заказать: «Кофе без молока»?",
+        a: "Kafa bez mleka."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Можно без лука?»",
+        a: "Je l' može bez luka?",
+        alts: ["Može bez luka?"]
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как сказать про добавки: «Положите всё»?",
+        a: "Stavite sve."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как заказать без майонеза?",
+        a: "Bez majoneza."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как попросить: «Каймак отдельно»?",
+        a: "Kajmak sa strane."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Острое?»",
+        a: "Je l' ljuto?",
+        alts: ["Da li je ljuto?"]
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как спросить: «Не острое ведь, да?»",
+        a: "Nije ljuto, je l' da?"
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Что к этому идёт?»",
+        a: "Šta ide uz to?"
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как спросить про состав: «С чем эта пицца?»",
+        a: "Sa čim je ova pica?"
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Есть что-нибудь вегетарианское?»",
+        a: "Imate li nešto vegetarijansko?",
+        alts: ["Je l' imate nešto vegetarijansko?"]
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как спросить: «Есть что-то без глютена?»",
+        a: "Ima li nešto bez glutena?",
+        alts: ["Je l' ima nešto bez glutena?"]
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как может спросить сотрудник: «Здесь или с собой?»",
+        a: "Za ovde ili za poneti?"
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как ответить: «Здесь»?",
+        a: "Za ovde.",
+        alts: ["Ovde."]
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как заказать: «Можно маленькую плескавицу в лепине?»",
+        a: "Može mala pljeskavica u lepinji."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как заказать: «Десять чевапов в лепине»?",
+        a: "Deset ćevapa u lepinji."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как сказать: «И картошку фри к этому»?",
+        a: "Pomfrit uz to."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как спросить: «Можно ещё один кофе?»",
+        a: "Može još jedna kafa?"
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как может спросить официант: «Вода обычная или газированная?»",
+        a: "Voda obična ili kisela?"
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как ответить: «Газированная вода»?",
+        a: "Kisela voda."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как ответить: «Обычная вода»?",
+        a: "Obična voda."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как заказать: «Одно маленькое пиво»?",
+        a: "Jedno malo pivo."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Разливное есть?»",
+        a: "Imate li točeno?",
+        alts: ["Je l' imate točeno?"]
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как может спросить официант: «Что-нибудь ещё?»",
+        a: "Još nešto?"
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как попросить счёт: «Счёт, когда будет минутка»?",
+        a: "Račun, kad stignete."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как коротко спросить: «Можно счёт?»",
+        a: "Je l' može račun?",
+        alts: ["Može račun?"]
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как сказать: «Раздельно, каждый за себя»?",
+        a: "Odvojeno, svako svoje."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как сказать: «Всё вместе»?",
+        a: "Sve zajedno."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как ответить на вопрос об оплате: «Картой»?",
+        a: "Karticom."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Вы оставляете сдачу. Как сказать: «Всё нормально / оставьте себе»?",
+        a: "U redu je."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как сказать после еды: «Было классно»?",
+        a: "Bilo je super."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как похвалить еду: «Моё почтение, было отлично»?",
+        a: "Svaka čast, bilo je odlično."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как сказать по телефону: «Хочу забронировать столик на четверых»?",
+        a: "Da rezervišem sto za četvoro."
+      },
+      {
+        c: "Ресторан",
+        t: "input",
+        ru: "Как ответить на вопрос о времени: «Около восьми»?",
+        a: "Oko osam."
+      },
+      {
+        c: "Ресторан",
+        t: "choice",
+        ru: "Как спросить: «Есть места сегодня вечером?»",
+        a: "Ima li mesta večeras?",
+        alts: ["Je l' ima mesta večeras?"]
+      }
+    ];
+
+    let quizQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let mistakes = [];
+    let answered = false;
+
+    const categorySelect = document.getElementById("categorySelect");
+    const questionEl = document.getElementById("question");
+    const questionLabel = document.getElementById("questionLabel");
+    const categoryEl = document.getElementById("category");
+    const answersEl = document.getElementById("answers");
+    const feedbackEl = document.getElementById("feedback");
+    const nextBtn = document.getElementById("nextBtn");
+    const progressText = document.getElementById("progressText");
+    const scoreText = document.getElementById("scoreText");
+    const progressFill = document.getElementById("progressFill");
+    const quizScreen = document.getElementById("quizScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function normalizeAnswer(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "dj")
+        .replace(/[’'.,!?;:()"„“]/g, "")
+        .replace(/\bje\s+l\b/g, "jel")
+        .replace(/\bda\s+l\b/g, "dal")
+        .replace(/\s+/g, " ");
+    }
+
+    function isCorrectAnswer(userAnswer, item) {
+      const answers = [item.a, ...(item.alts || [])]
+        .map(normalizeAnswer);
+
+      return answers.includes(normalizeAnswer(userAnswer));
+    }
+
+    function startQuiz() {
+      const selectedCategory = categorySelect.value;
+
+      const source = selectedCategory === "all"
+        ? ALL_QUESTIONS
+        : ALL_QUESTIONS.filter(item => item.c === selectedCategory);
+
+      quizQuestions = shuffle(source).slice(0, 20);
+
+      currentIndex = 0;
+      score = 0;
+      mistakes = [];
+      answered = false;
+
+      quizScreen.style.display = "block";
+      resultScreen.style.display = "none";
+
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      answered = false;
+
+      const item = quizQuestions[currentIndex];
+
+      categoryEl.textContent = item.c;
+      questionEl.textContent = item.ru;
+      answersEl.innerHTML = "";
+
+      questionLabel.textContent = item.t === "input"
+        ? "Напишите естественный вариант по-сербски:"
+        : "Выберите естественный вариант:";
+
+      feedbackEl.className = "feedback";
+      feedbackEl.innerHTML = "";
+      nextBtn.style.display = "none";
+
+      progressText.textContent =
+        `Вопрос ${currentIndex + 1} из ${quizQuestions.length}`;
+
+      scoreText.textContent = `Верно: ${score}`;
+
+      progressFill.style.width =
+        `${(currentIndex / quizQuestions.length) * 100}%`;
+
+      if (item.t === "input") {
+        renderInputQuestion();
+      } else {
+        renderChoiceQuestion(item);
+      }
+    }
+
+    function renderChoiceQuestion(item) {
+      const sameCategoryQuestions = ALL_QUESTIONS.filter(question =>
+        question.c === item.c && question.a !== item.a
+      );
+
+      const wrongAnswers = shuffle(sameCategoryQuestions)
+        .slice(0, 3)
+        .map(question => question.a);
+
+      const options = shuffle([item.a, ...wrongAnswers]);
+
+      options.forEach(option => {
+        const button = document.createElement("button");
+
+        button.className = "answer-btn";
+        button.textContent = option;
+
+        button.addEventListener("click", () => {
+          checkChoiceAnswer(option, button);
+        });
+
+        answersEl.appendChild(button);
+      });
+    }
+
+    function renderInputQuestion() {
+      const inputArea = document.createElement("div");
+      inputArea.className = "input-area";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = "textAnswer";
+      input.className = "text-answer";
+      input.placeholder = "Введите фразу на сербском...";
+      input.autocomplete = "off";
+
+      const checkButton = document.createElement("button");
+      checkButton.className = "main-btn";
+      checkButton.textContent = "Проверить";
+
+      checkButton.addEventListener("click", () => {
+        checkInputAnswer(input);
+      });
+
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          checkInputAnswer(input);
+        }
+      });
+
+      inputArea.appendChild(input);
+      inputArea.appendChild(checkButton);
+      answersEl.appendChild(inputArea);
+
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function checkChoiceAnswer(selected, selectedButton) {
+      if (answered) return;
+
+      answered = true;
+
+      const item = quizQuestions[currentIndex];
+      const allButtons = document.querySelectorAll(".answer-btn");
+      const isCorrect = selected === item.a;
+
+      allButtons.forEach(button => {
+        button.disabled = true;
+
+        if (button.textContent === item.a) {
+          button.classList.add("correct");
+        }
+      });
+
+      if (!isCorrect) {
+        selectedButton.classList.add("wrong");
+      }
+
+      finishAnswer(isCorrect, item);
+    }
+
+    function checkInputAnswer(input) {
+      if (answered) return;
+
+      const userAnswer = input.value.trim();
+
+      if (!userAnswer) {
+        input.focus();
+        input.placeholder = "Сначала введите ответ";
+        return;
+      }
+
+      answered = true;
+
+      const item = quizQuestions[currentIndex];
+      const isCorrect = isCorrectAnswer(userAnswer, item);
+
+      input.disabled = true;
+      input.classList.add(isCorrect ? "correct-input" : "wrong-input");
+
+      const checkButton = document.querySelector(".input-area .main-btn");
+
+      if (checkButton) {
+        checkButton.disabled = true;
+      }
+
+      finishAnswer(isCorrect, item);
+    }
+
+    function finishAnswer(isCorrect, item) {
+      if (isCorrect) {
+        score++;
+
+        feedbackEl.className = "feedback show good";
+        feedbackEl.innerHTML = `
+          <strong>Верно!</strong>
+          <span class="hint">
+            Так действительно можно сказать в обычной ситуации.
+          </span>
+        `;
+      } else {
+        mistakes.push(item);
+
+        feedbackEl.className = "feedback show bad";
+        feedbackEl.innerHTML = `
+          <strong>Не совсем.</strong>
+          Естественный вариант: <b>${item.a}</b>
+        `;
+      }
+
+      scoreText.textContent = `Верно: ${score}`;
+
+      nextBtn.style.display = "inline-block";
+
+      nextBtn.textContent = currentIndex === quizQuestions.length - 1
+        ? "Показать результат"
+        : "Следующий вопрос →";
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+
+      if (currentIndex < quizQuestions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      quizScreen.style.display = "none";
+      resultScreen.style.display = "block";
+      progressFill.style.width = "100%";
+
+      const total = quizQuestions.length;
+      const percent = Math.round((score / total) * 100);
+
+      document.getElementById("finalScore").textContent =
+        `${score} / ${total}`;
+
+      let message = "";
+
+      if (percent === 100) {
+        message = "Отлично! Вы уверенно справитесь с заказами, покупками и разговором в кафе.";
+      } else if (percent >= 75) {
+        message = "Очень хороший результат. Повторите несколько фраз — и будет совсем уверенно.";
+      } else if (percent >= 50) {
+        message = "Неплохо. Перезапустите тест: в следующий раз попадутся другие 20 фраз.";
+      } else {
+        message = "Повторите фразы ниже и попробуйте ещё раз. Постепенно они начнут запоминаться автоматически.";
+      }
+
+      document.getElementById("resultMessage").textContent = message;
+
+      const mistakesBlock = document.getElementById("mistakesBlock");
+      const mistakesList = document.getElementById("mistakesList");
+
+      mistakesList.innerHTML = "";
+
+      if (mistakes.length > 0) {
+        mistakesBlock.style.display = "block";
+
+        mistakes.forEach(item => {
+          const div = document.createElement("div");
+
+          div.className = "mistake-item";
+          div.innerHTML = `
+            <b>${item.ru}</b><br>
+            <span>${item.a}</span>
+          `;
+
+          mistakesList.appendChild(div);
+        });
+      } else {
+        mistakesBlock.style.display = "none";
+      }
+    }
+
+    startQuiz();
+  </script>
+</body>
+</html>
